@@ -1,0 +1,139 @@
+pyspark --master yarn --conf spark.ui.port=12643 --num-executors 4 --executor-memory 1GB --packages om.databricks:spark-csv_2.10:1.4.0
+
+import pandas as pd
+
+from pyspark.sql import SQLContext
+from pyspark.sql import *
+from pyspark.sql.functions import *
+
+kiva_loan=pd.read_csv("/home/sahilbhange/kiva_loan_data/kiva_loans.csv",encoding='utf-8',delimiter=',')
+
+sqlc=SQLContext(sc)
+
+kivaLoan_req_fields = kiva_loan[['id','funded_amount','loan_amount','activity','sector','country','currency','partner_id','posted_time','term_in_months','lender_count','repayment_interval','date']]
+
+kivaLoan_SDF=sqlc.createDataFrame(kivaLoan_req_fields)
+
+#hadoop fs -rm -r -skipTrash /user/sahilbhange/output/kiva/*
+
+kivaLoan_SDF.repartition(1).write.format('com.databricks.spark.csv').save('/user/sahilbhange/data/kiva/stg',header = 'true')
+
+kivaLoanDF = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/stg/part-00000')
+
+>>> kivaLoanDF.printSchema()
+root
+ |-- id: integer (nullable = true)
+ |-- funded_amount: double (nullable = true)
+ |-- loan_amount: double (nullable = true)
+ |-- activity: string (nullable = true)
+ |-- sector: string (nullable = true)
+ |-- country: string (nullable = true)
+ |-- currency: string (nullable = true)
+ |-- partner_id: double (nullable = true)
+ |-- posted_time: string (nullable = true)
+ |-- term_in_months: double (nullable = true)
+ |-- lender_count: integer (nullable = true)
+ |-- repayment_interval: string (nullable = true)
+ |-- date: string (nullable = true)
+
+
+ loanThemeidsDf = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/loan_theme_ids.csv')
+
+>>> loanThemeidsDf.printSchema()
+root
+ |-- id: integer (nullable = true)
+ |-- Loan Theme ID: string (nullable = true)
+ |-- Loan Theme Type: string (nullable = true)
+ |-- Partner ID: double (nullable = true)
+
+
+loanThemesByRregion = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/loan_themes_by_region.csv')
+
+>>> loanThemesByRregion.printSchema()
+root
+ |-- Partner ID: integer (nullable = true)
+ |-- Field Partner Name: string (nullable = true)
+ |-- sector: string (nullable = true)
+ |-- Loan Theme ID: string (nullable = true)
+ |-- Loan Theme Type: string (nullable = true)
+ |-- country: string (nullable = true)
+ |-- forkiva: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- geocode_old: string (nullable = true)
+ |-- ISO: string (nullable = true)
+ |-- number: integer (nullable = true)
+ |-- amount: integer (nullable = true)
+ |-- LocationName: string (nullable = true)
+ |-- geocode: string (nullable = true)
+ |-- names: string (nullable = true)
+ |-- geo: string (nullable = true)
+ |-- lat: double (nullable = true)
+ |-- lon: double (nullable = true)
+ |-- mpi_region: string (nullable = true)
+ |-- mpi_geo: string (nullable = true)
+ |-- rural_pct: double (nullable = true)
+
+ MpiRegionLocationsDf= sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/kiva_mpi_region_locations.csv')
+
+>>> MpiRegionLocationsDf.printSchema()
+root
+ |-- LocationName: string (nullable = true)
+ |-- ISO: string (nullable = true)
+ |-- country: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- world_region: string (nullable = true)
+ |-- MPI: double (nullable = true)
+ |-- geo: string (nullable = true)
+ |-- lat: double (nullable = true)
+ |-- lon: double (nullable = true)
+
+
+
+kivaLoanDF.registerTempTable("kivaLoanTable")
+loanThemeidsDf.registerTempTable("loanThemeidsTable")
+loanThemesByRregion.registerTempTable("loanThemesByRregionTable")
+MpiRegionLocationsDf.registerTempTable("MpiRegionLocationsTable")
+
+
+Number of Loans By Country
+
+sqlRes = sqlContext.sql("select count(*) as loan_cnt,country from  kivaLoanTable group by country order by loan_cnt desc")	
+
+sqlRes = sqlContext.sql("select sum(funded_amount) as funded_amount,sum(loan_amount) as loan_amount,country from  kivaLoanTable group by country order by funded_amount desc")	
+
+
+Most popular sectors in which loans are taken
+
+sqlRes = sqlContext.sql("select count(*) as sector_cnt,sector from  kivaLoanTable group by sector order by sector_cnt desc")	
+
+sqlRes = sqlContext.sql("select sum(funded_amount) as funded_amount,sum(loan_amount) as loan_amount,sector from  kivaLoanTable group by sector order by funded_amount desc")	
+
+
+Distribution of Loan duration
+
+sqlRes = sqlContext.sql("select count(*) as term_cnt,term_in_months from  kivaLoanTable group by term_in_months order by term_cnt desc")	
+
+
+sqlRes = sqlContext.sql("select count(*) as repayment_interval_cnt,repayment_interval from  kivaLoanTable group by repayment_interval order by repayment_interval_cnt desc")
+
+lender_count
+
+
+sqlRes = sqlContext.sql("select count(*) as lender_cnt,lender_count from  kivaLoanTable group by lender_count order by lender_cnt desc")
+
+activity
+
+sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoanTable where activity like '%Food%' group by activity order by activity_cnt desc")
+
+sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoanTable where loan_amount between 500 and 1000 group by activity order by activity_cnt desc")
+
+
+sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoanTable where loan_amount between 500 and 1000 group by activity order by activity_cnt desc")
+
+
+# Loan funded amount and loan amount based on Loan Theme Type
+
+sqlRes = sqlContext.sql("select sum(kl.fmunded_aount),sum(kl.funded_amount), `Loan Theme ID` as   from  kivaLoanTable where loan_amount between 500 and 1000 group by activity order by activity_cnt desc")
+
+
+sqlRes = sqlContext.sql("select sum(kl.funded_amount) as total_funded_amount,sum(kl.loan_amount) total_loan_amount,lt.`Loan Theme Type` as Loan_Theme_Type  from kivaLoanTable kl left join loanThemeidsTable lt on kl.id=lt.id group by lt.`Loan Theme Type` order by total_funded_amount desc")
