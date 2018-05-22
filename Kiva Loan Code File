@@ -99,8 +99,11 @@ Number of Loans By Country
 
 sqlRes = sqlContext.sql("select count(*) as loan_cnt,country from  kivaLoanTable group by country order by loan_cnt desc")	
 
+sqlRes.show(20)
+
 sqlRes = sqlContext.sql("select sum(funded_amount) as funded_amount,sum(loan_amount) as loan_amount,country from  kivaLoanTable group by country order by funded_amount desc")	
 
+sqlRes.show(20)
 
 Most popular sectors in which loans are taken
 
@@ -116,12 +119,12 @@ sqlRes = sqlContext.sql("select count(*) as term_cnt,term_in_months from  kivaLo
 
 sqlRes = sqlContext.sql("select count(*) as repayment_interval_cnt,repayment_interval from  kivaLoanTable group by repayment_interval order by repayment_interval_cnt desc")
 
-lender_count
+sqlRes.show(20)
 
 
 sqlRes = sqlContext.sql("select count(*) as lender_cnt,lender_count from  kivaLoanTable group by lender_count order by lender_cnt desc")
 
-activity
+sqlRes.show(20)
 
 sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoanTable where activity like '%Food%' group by activity order by activity_cnt desc")
 
@@ -135,5 +138,7 @@ sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoan
 
 sqlRes = sqlContext.sql("select sum(kl.fmunded_aount),sum(kl.funded_amount), `Loan Theme ID` as   from  kivaLoanTable where loan_amount between 500 and 1000 group by activity order by activity_cnt desc")
 
-
+sqlRes.show(20)
 sqlRes = sqlContext.sql("select sum(kl.funded_amount) as total_funded_amount,sum(kl.loan_amount) total_loan_amount,lt.`Loan Theme Type` as Loan_Theme_Type  from kivaLoanTable kl left join loanThemeidsTable lt on kl.id=lt.id group by lt.`Loan Theme Type` order by total_funded_amount desc")
+
+sqlRes.show(20)
