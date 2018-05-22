@@ -1,0 +1,63 @@
+All Kiva loan RAW files are copied to the HDFS directory
+
+[sahilbhange@gw02 ~]$ hadoop fs -ls /user/sahilbhange/data/kiva/
+Found 6 items
+-rw-r--r--   3 sahilbhange hdfs  195852823 2018-05-21 11:10 /user/sahilbhange/data/kiva/kiva_loans.csv
+-rw-r--r--   3 sahilbhange hdfs  200440149 2018-05-22 13:36 /user/sahilbhange/data/kiva/kiva_loans_formated.csv
+-rw-r--r--   3 sahilbhange hdfs     177359 2018-05-21 11:10 /user/sahilbhange/data/kiva/kiva_mpi_region_locations.csv
+-rw-r--r--   3 sahilbhange hdfs   31641314 2018-05-21 11:10 /user/sahilbhange/data/kiva/loan_theme_ids.csv
+-rw-r--r--   3 sahilbhange hdfs    5055066 2018-05-21 11:10 /user/sahilbhange/data/kiva/loan_themes_by_region.csv
+
+
+Sample Input file data:
+
+,id,funded_amount,loan_amount,activity,sector,use,country_code,country,region,currency,partner_id,posted_time,disbursed_time,funded_time,term_in_months,lender_count,tags,borrower_genders,repayment_interval,date
+0,653051,300.0,300.0,Fruits & Vegetables,Food,"To buy seasonal, fresh fruits to sell. ",PK,Pakistan,Lahore,PKR,247.0,2014-01-01 06:12:39+00:00,2013-12-17 08:00:00+00:00,2014-01-02 10:06:32+00:00,12.0,12,,female,irregular,2014-01-01
+1,653053,575.0,575.0,Rickshaw,Transportation,to repair and maintain the auto rickshaw used in their business.,PK,Pakistan,Lahore,PKR,247.0,2014-01-01 06:51:08+00:00,2013-12-17 08:00:00+00:00,2014-01-02 09:17:23+00:00,11.0,14,,"female, female",irregular,2014-01-01
+2,653068,150.0,150.0,Transportation,Transportation,To repair their old cycle-van and buy another one to rent out as a source of income,IN,India,Maynaguri,INR,334.0,2014-01-01 09:58:07+00:00,2013-12-17 08:00:00+00:00,2014-01-01 16:01:36+00:00,43.0,6,"user_favorite, user_favorite",female,bullet,2014-01-01
+3,653063,200.0,200.0,Embroidery,Arts,to purchase an embroidery machine and a variety of new embroidery materials.,PK,Pakistan,Lahore,PKR,247.0,2014-01-01 08:03:11+00:00,2013-12-24 08:00:00+00:00,2014-01-01 13:00:00+00:00,11.0,8,,female,irregular,2014-01-01
+4,653084,400.0,400.0,Milk Sales,Food,to purchase one buffalo.,PK,Pakistan,Abdul Hakeem,PKR,245.0,2014-01-01 11:53:19+00:00,2013-12-17 08:00:00+00:00,2014-01-01 19:18:51+00:00,14.0,16,,female,monthly,2014-01-01
+5,1080148,250.0,250.0,Services,Services,purchase leather for my business using ksh 20000.,KE,Kenya,,KES,,2014-01-01 10:06:19+00:00,2014-01-30 01:42:48+00:00,2014-01-29 14:14:57+00:00,4.0,6,,female,irregular,2014-01-01
+6,653067,200.0,200.0,Dairy,Agriculture,To purchase a dairy cow and start a milk products business .,IN,India,Maynaguri,INR,334.0,2014-01-01 09:51:02+00:00,2013-12-16 08:00:00+00:00,2014-01-01 17:18:09+00:00,43.0,8,"user_favorite, user_favorite",female,bullet,2014-01-01
+7,653078,400.0,400.0,Beauty Salon,Services,to buy more hair and skin care products.  ,PK,Pakistan,Ellahabad,PKR,245.0,2014-01-01 11:46:01+00:00,2013-12-20 08:00:00+00:00,2014-01-10 18:18:44+00:00,14.0,8,"#Elderly, #Woman Owned Biz",female,monthly,2014-01-01
+8,653082,475.0,475.0,Manufacturing,Manufacturing,"to purchase leather, plastic soles and heels in different sizes along with spools of thread.",PK,Pakistan,Lahore,PKR,245.0,2014-01-01 11:49:43+00:00,2013-12-20 08:00:00+00:00,2014-01-01 18:47:21+00:00,14.0,19,user_favorite,female,monthly,2014-01-01
+
+[sahilbhange@gw02 ~]$ hadoop fs -cat /user/sahilbhange/data/kiva/kiva_mpi_region_locations.csv |head
+LocationName,ISO,country,region,world_region,MPI,geo,lat,lon
+"Badakhshan, Afghanistan",AFG,Afghanistan,Badakhshan,South Asia,0.387,"(36.7347725, 70.81199529999999)",36.7347725,70.81199529999998
+"Badghis, Afghanistan",AFG,Afghanistan,Badghis,South Asia,0.466,"(35.1671339, 63.7695384)",35.1671339,63.7695384
+"Baghlan, Afghanistan",AFG,Afghanistan,Baghlan,South Asia,0.3,"(35.8042947, 69.2877535)",35.80429470000001,69.28775350000001
+"Balkh, Afghanistan",AFG,Afghanistan,Balkh,South Asia,0.301,"(36.7550603, 66.8975372)",36.7550603,66.8975372
+"Bamyan, Afghanistan",AFG,Afghanistan,Bamyan,South Asia,0.325,"(34.8100067, 67.8212104)",34.8100067,67.8212104
+"Daykundi, Afghanistan",AFG,Afghanistan,Daykundi,South Asia,0.313,"(33.669495, 66.0463534)",33.669495,66.0463534
+"Farah, Afghanistan",AFG,Afghanistan,Farah,South Asia,0.319,"(32.4464635, 62.1454133)",32.4464635,62.1454133
+"Faryab, Afghanistan",AFG,Afghanistan,Faryab,South Asia,0.25,"(36.0795613, 64.90595499999999)",36.0795613,64.90595499999999
+"Ghazni, Afghanistan",AFG,Afghanistan,Ghazni,South Asia,0.245,"(33.5450587, 68.4173972)",33.5450587,68.41739720000001
+
+[sahilbhange@gw02 ~]$ hadoop fs -cat /user/sahilbhange/data/kiva/loan_theme_ids.csv |head
+id,Loan Theme ID,Loan Theme Type,Partner ID
+638631,a1050000000skGl,General,151.0
+640322,a1050000000skGl,General,151.0
+641006,a1050000002X1ij,Higher Education,160.0
+641019,a1050000002X1ij,Higher Education,160.0
+641594,a1050000002VbsW,Subsistence Agriculture,336.0
+642256,a1050000000T3oX,Extreme Poverty,217.0
+642311,a1050000000snTK,General,57.0
+642353,a1050000000T3oX,Extreme Poverty,217.0
+642386,a1050000000wf0f,General,133.0
+
+
+[sahilbhange@gw02 ~]$ hadoop fs -cat /user/sahilbhange/data/kiva/loan_themes_by_region.csv |head
+Partner ID,Field Partner Name,sector,Loan Theme ID,Loan Theme Type,country,forkiva,region,geocode_old,ISO,number,amount,LocationName,geocode,names,geo,lat,lon,mpi_region,mpi_geo,rural_pct
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000000slfi,Higher Education,Cambodia,No,Banteay Meanchey,"(13.75, 103.0)",KHM,1,450,"Banteay Meanchey, Cambodia","[(13.6672596, 102.8975098)]",Banteay Meanchey Province; Cambodia,"(13.6672596, 102.8975098)",13.6672596,102.8975098,"Banteay Mean Chey, Cambodia","(13.6672596, 102.8975098)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a10500000068jPe,Vulnerable Populations,Cambodia,No,Battambang Province,,KHM,58,20275,"Battambang Province, Cambodia","[(13.0286971, 102.989615)]",Battambang Province; Cambodia,"(13.0286971, 102.989615)",13.0286971,102.989615,"Banteay Mean Chey, Cambodia","(13.6672596, 102.8975098)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000000slfi,Higher Education,Cambodia,No,Battambang Province,,KHM,7,9150,"Battambang Province, Cambodia","[(13.0286971, 102.989615)]",Battambang Province; Cambodia,"(13.0286971, 102.989615)",13.0286971,102.989615,"Banteay Mean Chey, Cambodia","(13.6672596, 102.8975098)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a10500000068jPe,Vulnerable Populations,Cambodia,No,Kampong Cham Province,"(12.0, 105.5)",KHM,1383,604950,"Kampong Cham Province, Cambodia","[(12.0982918, 105.3131185)]",Kampong Cham Province; Cambodia,"(12.0982918, 105.3131185)",12.0982918,105.3131185,"Kampong Cham, Cambodia","(11.9924294, 105.4645408)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000002X1Uu,Sanitation,Cambodia,No,Kampong Cham Province,"(12.0, 105.5)",KHM,3,275,"Kampong Cham Province, Cambodia","[(12.0982918, 105.3131185)]",Kampong Cham Province; Cambodia,"(12.0982918, 105.3131185)",12.0982918,105.3131185,"Kampong Cham, Cambodia","(11.9924294, 105.4645408)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000000slfi,Higher Education,Cambodia,No,Kampong Cham Province,"(12.0, 105.5)",KHM,36,62225,"Kampong Cham Province, Cambodia","[(12.0982918, 105.3131185)]",Kampong Cham Province; Cambodia,"(12.0982918, 105.3131185)",12.0982918,105.3131185,"Kampong Cham, Cambodia","(11.9924294, 105.4645408)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000007VvXr,Solar Home Systems,Cambodia,No,Kampong Cham Province,"(12.0, 105.5)",KHM,2,1300,"Kampong Cham Province, Cambodia","[(12.0982918, 105.3131185)]",Kampong Cham Province; Cambodia,"(12.0982918, 105.3131185)",12.0982918,105.3131185,"Kampong Cham, Cambodia","(11.9924294, 105.4645408)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000000weyk,General,Cambodia,No,Kampong Chhnang Province,"(12.0, 104.5)",KHM,249,237175,"Kampong Chhnang Province, Cambodia","[(12.1392352, 104.5655273)]",Kampong Chhnang Province; Cambodia,"(12.1392352, 104.5655273)",12.1392352,104.5655273,"Kampong Chhnang, Cambodia","(12.1392352, 104.5655273)",90.0
+9,KREDIT Microfinance Institution,General Financial Inclusion,a1050000007VvXr,Solar Home Systems,Cambodia,No,Kampong Chhnang Province,"(12.0, 104.5)",KHM,7,3050,"Kampong Chhnang Province, Cambodia","[(12.1392352, 104.5655273)]",Kampong Chhnang Province; Cambodia,"(12.1392352, 104.5655273)",12.1392352,104.5655273,"Kampong Chhnang, Cambodia","(12.1392352, 104.5655273)",90.0
+
+
+
