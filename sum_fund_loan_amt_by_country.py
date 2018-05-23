@@ -27,7 +27,6 @@ sqlContext = SQLContext(sc)
 
 kivaLoanDF = sqlContext.read.format('com.databricks.spark.csv').options(header='true',  inferschema='true').load('/user/sahilbhange/data/kiva/stg/part-00000')
 
-
 # Load Spark data frame as Spark SQL table
 kivaLoanDF.registerTempTable("kivaLoanTable")
 
