@@ -1,4 +1,6 @@
+Kiva loan data files and their metadata
 
+File: kiva_loans_formated.csv
 >>> kivaLoanDF.printSchema()
 root
  |-- id: integer (nullable = true)
@@ -15,6 +17,7 @@ root
  |-- repayment_interval: string (nullable = true)
  |-- date: string (nullable = true)
  
+ File: loan_theme_ids.csv
  >>> loanThemeidsDf.printSchema()
 root
  |-- id: integer (nullable = true)
@@ -22,6 +25,7 @@ root
  |-- Loan Theme Type: string (nullable = true)
  |-- Partner ID: double (nullable = true)
  
+ File: loan_themes_by_region.csv
  >>> loanThemesByRregion.printSchema()
 root
  |-- Partner ID: integer (nullable = true)
@@ -47,6 +51,7 @@ root
  |-- rural_pct: double (nullable = true)
  
  
+ File: kiva_mpi_region_locations.csv 
  >>> MpiRegionLocationsDf.printSchema()
 root
  |-- LocationName: string (nullable = true)
