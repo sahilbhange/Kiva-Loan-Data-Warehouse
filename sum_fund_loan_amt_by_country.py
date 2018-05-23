@@ -19,7 +19,7 @@ from pyspark.sql import SQLContext
 from pyspark.sql import *
 from pyspark.sql.functions import *
 
-conf=SparkConf().setAppName("no-loan-by-cntry").setMaster("yarn-client")
+conf=SparkConf().setAppName("sum-fund-loan-amt").setMaster("yarn-client")
 
 sc = SparkContext(conf=conf)
 
