@@ -1,4 +1,6 @@
-pyspark --master yarn --conf spark.ui.port=12643 --num-executors 4 --executor-memory 1GB --packages om.databricks:spark-csv_2.10:1.4.0
+# Kiva loan files preliminary data exploration 
+
+pyspark --master yarn --conf spark.ui.port=12643 --num-executors 4 --executor-memory 1GB --packages com.databricks:spark-csv_2.10:1.4.0
 
 import pandas as pd
 
@@ -6,23 +8,80 @@ from pyspark.sql import SQLContext
 from pyspark.sql import *
 from pyspark.sql.functions import *
 
-kiva_loan=pd.read_csv("/home/sahilbhange/kiva_loan_data/kiva_loans.csv",encoding='utf-8',delimiter=',')
+
+#  kiva_loans.csv file contains comma (,) in the column field value due to this Pyspark CSV reader package is unable to read data correctly
+# Thus, first load the data using the python pandas library and select the appropriate columns and create new Spark data from Pandas dataframe
+# Operations are as below
+
+# load csv file data using pandas
+kiva_loan_pdf=pd.read_csv("/home/sahilbhange/kiva_loan_data/kiva_loans.csv",encoding='utf-8',delimiter=',')
+
+# pandas data pre-processing
+# Null values in borrower_genders column
+#>>> kiva_loan_pdf['borrower_genders'].isnull().sum()
+#4221
+
+# There are 4221 records with NULL value for field 'borrower_genders'
+# Thus default NULL value as "NotAvailable"
+
+kiva_loan_pdf['borrower_genders']=kiva_loan_pdf['borrower_genders'].fillna("NotAvailable")
+
+# normalize the values in borrower_genders columns as below
+# male - male
+# female - female
+# if male and female - group 
+kiva_loan_pdf['borrower_genders']=[elem if elem in ['female','male'] else 'group' for elem in kiva_loan_pdf['borrower_genders'] ]
+
+
+# There are 2396 records with NULL value for field 'disbursed_time'
+# thus default missing disbursed_time with '1900-01-01 00:00:00+00:00'
+# We can filter out default value records while querying the data
+#>>> kiva_loan_pdf['disbursed_time'].isnull().sum()
+#2396
+
+
+# Default the missing values for disbursed_time with '1900-01-01 00:00:00+00:00'
+kiva_loan_pdf['disbursed_time']=kiva_loan_pdf['disbursed_time'].fillna("1900-01-01 00:00:00+00:00")
+
+
+#>>> kiva_loan_pdf['country_code'].isnull().sum()
+#8
+
+# 8 values for country_code field are NULL
+
+# Find the corresponding coutry for NULL country_code value
+#>>> kiva_loan_pdf[kiva_loan_pdf['country_code'].isnull()][['country','country_code']]
+#        country country_code
+#202537  Namibia          NaN
+
+# Country Namibia has null values for country field
+# Fill Namibia coutry code value as 'NA'
+
+kiva_loan_pdf['country_code']=kiva_loan_pdf['country_code'].fillna("NA")
+
 
 sqlc=SQLContext(sc)
+# Select only required fields and create new pandas data frame
+# Exclude the country code in new file as coutry and coutry code give same information
+kivaLoan_req_fields = kiva_loan_pdf[['id','funded_amount','loan_amount','activity','sector','country','currency','partner_id','posted_time','disbursed_time','term_in_months','lender_count','borrower_genders','repayment_interval','date']]
 
-kivaLoan_req_fields = kiva_loan[['id','funded_amount','loan_amount','activity','sector','country','currency','partner_id','posted_time','term_in_months','lender_count','repayment_interval','date']]
 
+# Convert Pandas dataframe to Spark data frame
 kivaLoan_SDF=sqlc.createDataFrame(kivaLoan_req_fields)
 
 #hadoop fs -rm -r -skipTrash /user/sahilbhange/output/kiva/*
 
-kivaLoan_SDF.repartition(1).write.format('com.databricks.spark.csv').save('/user/sahilbhange/data/kiva/stg',header = 'true')
 
-kivaLoanDF = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/stg/part-00000')
+# Save the Spark data frame with required fields to HDFS 
+#kivaLoan_SDF.repartition(1).write.format('com.databricks.spark.csv').save('/user/sahilbhange/output/kiva/formated_output/',header = 'true')
 
->>> kivaLoanDF.printSchema()
+
+# Use the saved copy of data for further processing
+kivaLoan_NSDF = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/output/kiva/formated_output/part-00000.gz')
+
+>>> kivaLoan_SDF.printSchema()
 root
- |-- id: integer (nullable = true)
+ |-- id: long (nullable = true)
  |-- funded_amount: double (nullable = true)
  |-- loan_amount: double (nullable = true)
  |-- activity: string (nullable = true)
@@ -32,12 +91,15 @@ root
  |-- partner_id: double (nullable = true)
  |-- posted_time: string (nullable = true)
  |-- term_in_months: double (nullable = true)
- |-- lender_count: integer (nullable = true)
+ |-- lender_count: long (nullable = true)
+ |-- disbursed_time: string (nullable = true)
+ |-- borrower_genders: string (nullable = true)
  |-- repayment_interval: string (nullable = true)
  |-- date: string (nullable = true)
 
 
- loanThemeidsDf = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/sahilbhange/data/kiva/loan_theme_ids.csv')
+
+ loanThemeidsDf = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema	true').load('/user/sahilbhange/data/kiva/loan_theme_ids.csv')
 
 >>> loanThemeidsDf.printSchema()
 root
@@ -99,11 +161,8 @@ Number of Loans By Country
 
 sqlRes = sqlContext.sql("select count(*) as loan_cnt,country from  kivaLoanTable group by country order by loan_cnt desc")	
 
-sqlRes.show(20)
-
 sqlRes = sqlContext.sql("select sum(funded_amount) as funded_amount,sum(loan_amount) as loan_amount,country from  kivaLoanTable group by country order by funded_amount desc")	
 
-sqlRes.show(20)
 
 Most popular sectors in which loans are taken
 
@@ -119,12 +178,12 @@ sqlRes = sqlContext.sql("select count(*) as term_cnt,term_in_months from  kivaLo
 
 sqlRes = sqlContext.sql("select count(*) as repayment_interval_cnt,repayment_interval from  kivaLoanTable group by repayment_interval order by repayment_interval_cnt desc")
 
-sqlRes.show(20)
+lender_count
 
 
 sqlRes = sqlContext.sql("select count(*) as lender_cnt,lender_count from  kivaLoanTable group by lender_count order by lender_cnt desc")
 
-sqlRes.show(20)
+activity
 
 sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoanTable where activity like '%Food%' group by activity order by activity_cnt desc")
 
@@ -138,7 +197,5 @@ sqlRes = sqlContext.sql("select count(*) as activity_cnt,activity from  kivaLoan
 
 sqlRes = sqlContext.sql("select sum(kl.fmunded_aount),sum(kl.funded_amount), `Loan Theme ID` as   from  kivaLoanTable where loan_amount between 500 and 1000 group by activity order by activity_cnt desc")
 
-sqlRes.show(20)
-sqlRes = sqlContext.sql("select sum(kl.funded_amount) as total_funded_amount,sum(kl.loan_amount) total_loan_amount,lt.`Loan Theme Type` as Loan_Theme_Type  from kivaLoanTable kl left join loanThemeidsTable lt on kl.id=lt.id group by lt.`Loan Theme Type` order by total_funded_amount desc")
 
-sqlRes.show(20)
+sqlRes = sqlContext.sql("select sum(kl.funded_amount) as total_funded_amount,sum(kl.loan_amount) total_loan_amount,lt.`Loan Theme Type` as Loan_Theme_Type  from kivaLoanTable kl left join loanThemeidsTable lt on kl.id=lt.id group by lt.`Loan Theme Type` order by total_funded_amount desc")
