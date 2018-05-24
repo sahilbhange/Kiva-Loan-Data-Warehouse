@@ -1,0 +1,15 @@
+[sahilbhange@gw02 kiva_code]$ hadoop fs -ls /user/sahilbhange/output/kiva/formated_output/part-00000.gz 
+-rw-r--r--   3 sahilbhange hdfs   13465359 2018-05-24 13:06 /user/sahilbhange/output/kiva/formated_output/part-00000.gz
+
+
+[sahilbhange@gw02 kiva_code]$ hadoop fs -text /user/sahilbhange/output/kiva/formated_output/part-00000.gz |head
+id,funded_amount,loan_amount,activity,sector,country,currency,partner_id,posted_time,disbursed_time,term_in_months,lender_count,borrower_genders,repayment_interval,date
+982381,50.0,50.0,Farming,Agriculture,Ghana,GHS,449.0,2015-11-20 16:44:17+00:00,2015-11-17 08:00:00+00:00,10.0,2,male,irregular,2015-11-20
+982020,725.0,2600.0,Personal Medical Expenses,Health,Armenia,AMD,146.0,2015-11-20 09:02:26+00:00,2015-10-21 07:00:00+00:00,38.0,14,male,monthly,2015-11-20
+982140,600.0,600.0,Cereals,Food,Kenya,KES,138.0,2015-11-20 12:01:50+00:00,2015-11-12 08:00:00+00:00,11.0,18,male,monthly,2015-11-20
+982258,175.0,175.0,Food,Food,Colombia,COP,177.0,2015-11-20 14:29:32+00:00,2015-10-26 07:00:00+00:00,13.0,7,male,bullet,2015-11-20
+981947,225.0,225.0,Construction Supplies,Construction,Madagascar,MGA,359.0,2015-11-20 07:07:06+00:00,2015-11-05 08:00:00+00:00,8.0,6,female,irregular,2015-11-20
+982829,2000.0,2000.0,Food,Food,Paraguay,PYG,58.0,2015-11-21 22:26:20+00:00,2015-10-21 07:00:00+00:00,6.0,1,group,irregular,2015-11-21
+982682,475.0,475.0,Crafts,Arts,India,INR,241.0,2015-11-21 05:07:50+00:00,2015-11-13 08:00:00+00:00,43.0,14,group,bullet,2015-11-21
+982613,1425.0,1425.0,Grocery Store,Food,Ecuador,USD,137.0,2015-11-21 02:20:23+00:00,2015-10-22 07:00:00+00:00,7.0,23,female,irregular,2015-11-21
+982759,1075.0,1075.0,General Store,Retail,Philippines,PHP,145.0,2015-11-21 13:04:22+00:00,2015-10-23 07:00:00+00:00,8.0,22,female,irregular,2015-11-21
