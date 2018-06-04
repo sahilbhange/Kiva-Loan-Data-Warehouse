@@ -1,0 +1,29 @@
+[sahilbhange@gw02 ~]$ hadoop fs -text /user/sahilbhange/output/kiva/top_5_countries_total_approved_loan_amt_by_month/* |more
+country,mnth,total_loan_amt
+El Salvador,201401,735675.0
+Philippines,201401,678725.0
+Tajikistan,201401,628000.0
+Paraguay,201401,586400.0
+Peru,201401,572950.0
+Philippines,201404,994400.0
+Peru,201404,684925.0
+Philippines,201406,1246225.0
+Peru,201406,692925.0
+El Salvador,201406,599700.0
+Uganda,201406,580500.0
+Philippines,201408,1005675.0
+Philippines,201410,1519175.0
+El Salvador,201410,977200.0
+Kenya,201410,718550.0
+Paraguay,201410,717450.0
+United States,201410,705200.0
+Philippines,201411,1438825.0
+Kenya,201411,1429975.0
+El Salvador,201411,842650.0
+Peru,201411,643175.0
+United States,201411,594500.0
+Philippines,201501,993575.0
+Peru,201501,876450.0
+Kenya,201501,868550.0
+El Salvador,201501,771550.0
+Paraguay,201501,698125.0
